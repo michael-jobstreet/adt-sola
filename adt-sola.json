@@ -1,0 +1,276 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Description" : "Amaysim Test",
+	"Parameters" : {
+		"AmaysimKeyName" : {
+			"Type" : "AWS::EC2::KeyPair::KeyName",
+			"Default" : "michael.garcia"
+		}
+	},
+	"Resources" : {
+		"AmaysimVPC" : {
+			"Type" : "AWS::EC2::VPC",
+			"Properties" : {
+				"CidrBlock" : "10.0.0.0/16",
+				"EnableDnsHostnames" : "true",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim VPC"}]
+			}
+		},
+		"AmaysimIGW" : {
+			"Type" : "AWS::EC2::InternetGateway",
+			"Properties" : {
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim IGW"}]
+			}
+		},
+		"AmaysimVPCIGWAttachment" : {
+			"Type" : "AWS::EC2::VPCGatewayAttachment",
+			"Properties" : {
+				"InternetGatewayId" : {"Ref" : "AmaysimIGW"},
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimRT01" : {
+			"Type" : "AWS::EC2::RouteTable",
+			"Properties" : {
+				"VpcId" : {"Ref" : "AmaysimVPC"},
+				"Tags" : [{"Key" : "Name", 	"Value" : "Amaysim RouteTable01"}]
+			}
+		},
+		"AmaysimRouteToInternet" : {
+			"Type" : "AWS::EC2::Route",
+			"DependsOn" : "AmaysimVPCIGWAttachment",
+			"Properties" : {
+				"RouteTableId" : {"Ref" : "AmaysimRT01"},
+				"DestinationCidrBlock" : "0.0.0.0/0",
+				"GatewayId" : {"Ref" : "AmaysimIGW"}
+			}
+		},
+		"AmaysimPubSub01" : {
+			"Type" : "AWS::EC2::Subnet",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2a",
+				"CidrBlock" : "10.0.1.0/24",
+				"VpcId" : {"Ref" : "AmaysimVPC"},
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet01"}]
+			}
+		},
+		"AmaysimPubSub01RTA01" : {
+			"Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties" : {
+				"SubnetId" : {"Ref" : "AmaysimPubSub01"},
+				"RouteTableId" : {"Ref" : "AmaysimRT01"}
+			}
+		},
+		"AmaysimSGPublicSub01" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Amaysim Security Group Public Subnet01",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub01"}],
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimPublicInboundSSH" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimSGPublicSub01"},
+				"CidrIp" : "0.0.0.0/0",
+				"IpProtocol" : "tcp",
+				"FromPort" : "22",
+				"ToPort" : "22"
+			}
+		},
+		"AmaysimPubSub03" : {
+			"Type" : "AWS::EC2::Subnet",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2a",
+				"CidrBlock" : "10.0.3.0/24",
+				"VpcId" : {"Ref" : "AmaysimVPC"},
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet 03"}]
+			}
+		},
+		"AmaysimPubSub03RTA03" : {
+			"Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties" : {
+				"SubnetId" : {"Ref" : "AmaysimPubSub03"},
+				"RouteTableId" : {"Ref" : "AmaysimRT01"}
+			}
+		},
+		"AmaysimSGPublicSub03" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Amaysim Security Group Public Subnet03",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub03"}],
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimPublicInboundHTTP" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimSGPublicSub03"},
+				"CidrIp" : "0.0.0.0/0",
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "80"
+			}
+		},
+		"AmaysimPrivateInboundSSH" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimSGPublicSub03"},
+				"CidrIp" : "10.0.1.0/24",
+				"IpProtocol" : "tcp",
+				"FromPort" : "22",
+				"ToPort" : "22"
+			}
+		},
+		"AmaysimDB01PriSub01" : {
+			"Type" : "AWS::EC2::Subnet",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2a",
+				"CidrBlock" : "10.0.4.0/24",
+				"VpcId" : {"Ref" : "AmaysimVPC"},
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet01"}]
+			}
+		},
+		"AmaysimDB01PriSub01SG01" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Amaysim DB01 Private Subnet01 SG01",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 PrivSub01 SG01"}],
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimDB01PriSub01InboundTCP" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimDB01PriSub01SG01"},
+				"CidrIp" : "10.0.3.0/24",
+				"IpProtocol" : "tcp",
+				"FromPort" : "3306",
+				"ToPort" : "3306"
+			}
+		},
+		"AmaysimDB01PriSub02" : {
+			"Type" : "AWS::EC2::Subnet",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2b",
+				"CidrBlock" : "10.0.5.0/24",
+				"VpcId" : {"Ref" : "AmaysimVPC"},
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet02"}]
+			}
+		},
+		"AmaysimDB01PriSub02SG01" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Amaysim DB01 Private Subnet02 SG01",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 PrivSub02 SG01"}],
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimDB01PriSub02InboundTCP" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimDB01PriSub02SG01"},
+				"CidrIp" : "10.0.3.0/24",
+				"IpProtocol" : "tcp",
+				"FromPort" : "3306",
+				"ToPort" : "3306"
+			}
+		},
+		"AmaysimDBSubnetGroup" : {
+			"Type" : "AWS::RDS::DBSubnetGroup",
+			"Properties" : {
+				"DBSubnetGroupDescription" : "Amaysim DB Subnet Group",
+				"SubnetIds" : [
+					{"Ref" : "AmaysimDB01PriSub01"},
+					{"Ref" : "AmaysimDB01PriSub02"}
+				]
+			}
+		},
+		"AmaysimDBServer" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" : {
+				"AllocatedStorage" : "5",
+				"AvailabilityZone" : "ap-southeast-2a",
+				"DBInstanceClass" : "db.t2.micro",
+				"DBInstanceIdentifier" : "amaysim-db",
+				"Engine" : "Aurora",
+				"MasterUsername" : "root",
+				"MasterUserPassword" : "p455w0rd",
+				"VPCSecurityGroups" : [
+					{"Fn::GetAtt": ["AmaysimDB01PriSub01SG01", "GroupId"]},
+					{"Fn::GetAtt": ["AmaysimDB01PriSub02SG01", "GroupId"]}
+				],
+				"DBSubnetGroupName" : {"Ref" : "AmaysimDBSubnetGroup"}
+			}
+		},
+		"AmaysimJumpServer" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2a",
+				"ImageId" : "ami-34171d57",
+				"InstanceType" : "t2.micro",
+				"KeyName" : {"Ref" : "AmaysimKeyName"},
+				"NetworkInterfaces" : [{
+					"AssociatePublicIpAddress" : "true",
+					"DeleteOnTermination" : "true",
+					"DeviceIndex" : "0",
+					"SubnetId" : {"Ref" : "AmaysimPubSub01"},
+					"GroupSet" : [{"Ref" : "AmaysimSGPublicSub01"}]
+				}],
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Jump Server"}]
+			},
+			"DependsOn" : "AmaysimVPCIGWAttachment"
+		},
+		"AmaysimWebServer" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2a",
+				"ImageId" : "ami-34171d57",
+				"InstanceType" : "t2.micro",
+				"KeyName" : {"Ref" : "AmaysimKeyName"},
+				"NetworkInterfaces" : [{
+					"AssociatePublicIpAddress" : "true",
+					"DeleteOnTermination" : "true",
+					"DeviceIndex" : "0",
+					"SubnetId" : {"Ref" : "AmaysimPubSub03"},
+					"GroupSet" : [{"Ref" : "AmaysimSGPublicSub03"}]
+				}],
+				"Tags" : [{
+					"Key" : "Name", "Value" : "Amaysim WebServer"
+				}],
+				"UserData" : {
+					"Fn::Base64" : {
+						"Fn::Join" : ["",
+							[
+								"#!/bin/bash -ex\n",
+								"sudo yum install -y httpd php php-mysql wget\n",
+								"sudo systemctl start httpd\n",
+								"sudo systemctl enable httpd\n",
+								"sudo setsebool -P httpd_can_network_connect_db on\n",
+								"wget https://s3-ap-southeast-2.amazonaws.com/michael.garcia/app1.tgz\n",
+								"sudo tar -xzvf app1.tgz -C /var/www/html\n",
+								"sudo sed -i 's/localhost/", {"Fn::GetAtt" : ["AmaysimDBServer", "Endpoint.Address"]}, "/' /var/www/html/index.php"
+							]
+						]
+					}
+				}
+			},
+			"DependsOn" : "AmaysimVPCIGWAttachment"
+		}
+	},
+	"Outputs" : {
+		"AmaysimDBEndpoint" : {
+			"Description" : "Amaysim DB Server Endpoint",
+			"Value" : {"Fn::GetAtt" : ["AmaysimDBServer", "Endpoint.Address"]}
+		},
+		"AmaysimJumpServer" : {
+			"Description" : "ssh centos@hostname",
+			"Value" : {"Fn::GetAtt" : ["AmaysimJumpServer", "PublicDnsName"]}
+		},
+		"AmaysimWebServer" : {
+			"Description" : "Click the link to visit the site",
+			"Value" : {"Fn::GetAtt" : ["AmaysimWebServer", "PublicDnsName"]}
+		}
+	}
+}
