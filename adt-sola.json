@@ -269,7 +269,7 @@
 			"Value" : {"Fn::GetAtt" : ["AmaysimJumpServer", "PublicDnsName"]}
 		},
 		"AmaysimWebServer" : {
-			"Description" : "Click the link to visit the site",
+			"Description" : "Copy and paste the endpoint in your web browser",
 			"Value" : {"Fn::GetAtt" : ["AmaysimWebServer", "PublicDnsName"]}
 		}
 	}
