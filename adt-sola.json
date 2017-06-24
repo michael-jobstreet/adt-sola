@@ -143,7 +143,7 @@
 				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet01"}]
 			}
 		},
-		"AmaysimDB01PriSub01SG01" : {
+		"AmaysimDB01PriSubsSG01" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
 				"GroupDescription" : "Amaysim DB01 Private Subnet01 SG01",
@@ -151,10 +151,10 @@
 				"VpcId" : {"Ref" : "AmaysimVPC"}
 			}
 		},
-		"AmaysimDB01PriSub01InboundTCP" : {
+		"AmaysimDB01PriSubsInboundTCP" : {
 			"Type" : "AWS::EC2::SecurityGroupIngress",
 			"Properties" : {
-				"GroupId" : {"Ref" : "AmaysimDB01PriSub01SG01"},
+				"GroupId" : {"Ref" : "AmaysimDB01PriSubsSG01"},
 				"CidrIp" : "10.0.3.0/24",
 				"IpProtocol" : "tcp",
 				"FromPort" : "3306",
@@ -168,24 +168,6 @@
 				"CidrBlock" : "10.0.5.0/24",
 				"VpcId" : {"Ref" : "AmaysimVPC"},
 				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet02"}]
-			}
-		},
-		"AmaysimDB01PriSub02SG01" : {
-			"Type" : "AWS::EC2::SecurityGroup",
-			"Properties" : {
-				"GroupDescription" : "Amaysim DB01 Private Subnet02 SG01",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 PrivSub02 SG01"}],
-				"VpcId" : {"Ref" : "AmaysimVPC"}
-			}
-		},
-		"AmaysimDB01PriSub02InboundTCP" : {
-			"Type" : "AWS::EC2::SecurityGroupIngress",
-			"Properties" : {
-				"GroupId" : {"Ref" : "AmaysimDB01PriSub02SG01"},
-				"CidrIp" : "10.0.3.0/24",
-				"IpProtocol" : "tcp",
-				"FromPort" : "3306",
-				"ToPort" : "3306"
 			}
 		},
 		"AmaysimDBSubnetGroup" : {
@@ -210,8 +192,7 @@
 				"MasterUserPassword" : {"Ref" : "ADBPassword"},
 				"StorageType" : "Standard",
 				"VPCSecurityGroups" : [
-					{"Fn::GetAtt": ["AmaysimDB01PriSub01SG01", "GroupId"]},
-					{"Fn::GetAtt": ["AmaysimDB01PriSub02SG01", "GroupId"]}
+					{"Fn::GetAtt": ["AmaysimDB01PriSubsSG01", "GroupId"]}
 				],
 				"DBSubnetGroupName" : {"Ref" : "AmaysimDBSubnetGroup"}
 			}
