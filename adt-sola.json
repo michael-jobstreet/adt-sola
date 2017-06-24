@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
-	"Description" : "Amaysim Test",
+	"Description" : "Amaysim Test Solution 1",
 	"Parameters" : {
 		"AmaysimKeyName" : {
 			"Type" : "AWS::EC2::KeyPair::KeyName",
