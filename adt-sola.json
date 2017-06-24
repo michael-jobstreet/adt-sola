@@ -170,6 +170,19 @@
 				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet02"}]
 			}
 		},
+		
+		"AmaysimDBCluster" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"Properties" : {
+				"DBSubnetGroupName" : {"Ref" : "AmaysimDBSubnetGroup"},
+				"Engine" : "aurora",
+				"MasterUsername" : {"Ref" : "ADBUsername"},
+				"MasterUserPassword" : {"Ref" : "ADBPassword"},
+				"Port" : "3306",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Database Cluster"}],
+				"VpcSecurityGroupIds" : [{"Ref" : "AmaysimDB01PriSubsSG01"}]
+			}
+		},
 		"AmaysimDBSubnetGroup" : {
 			"Type" : "AWS::RDS::DBSubnetGroup",
 			"Properties" : {
@@ -180,21 +193,26 @@
 				]
 			}
 		},
-		"AmaysimDBServer" : {
+		"AmaysimDBInstance01" : {
 			"Type" : "AWS::RDS::DBInstance",
 			"Properties" : {
-				"AllocatedStorage" : "5",
+				"DBSubnetGroupName" : {"Ref" : "AmaysimDBSubnetGroup"},
+				"Engine" : "aurora",
+				"DBClusterIdentifier" : {"Ref" : "AmaysimDBCluster"},
+				"PubliclyAccessible" : "false",
 				"AvailabilityZone" : "ap-southeast-2a",
-				"DBInstanceClass" : "db.t2.micro",
-				"DBInstanceIdentifier" : "amaysim-dba",
-				"Engine" : "MariaDB",
-				"MasterUsername" : {"Ref" : "ADBUsername"},
-				"MasterUserPassword" : {"Ref" : "ADBPassword"},
-				"StorageType" : "Standard",
-				"VPCSecurityGroups" : [
-					{"Fn::GetAtt": ["AmaysimDB01PriSubsSG01", "GroupId"]}
-				],
-				"DBSubnetGroupName" : {"Ref" : "AmaysimDBSubnetGroup"}
+				"DBInstanceClass" : "db.t2.small"
+			}
+		},
+		"AmaysimDBInstance02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" : {
+				"DBSubnetGroupName" : {"Ref" : "AmaysimDBSubnetGroup"},
+				"Engine" : "aurora",
+				"DBClusterIdentifier" : {"Ref" : "AmaysimDBCluster"},
+				"PubliclyAccessible" : "false",
+				"AvailabilityZone" : "ap-southeast-2b",
+				"DBInstanceClass" : "db.t2.small"
 			}
 		},
 		"AmaysimJumpServer" : {
@@ -230,7 +248,7 @@
 					"GroupSet" : [{"Ref" : "AmaysimSGPublicSub03"}]
 				}],
 				"Tags" : [{
-					"Key" : "Name", "Value" : "Amaysim WebServer"
+					"Key" : "Name", "Value" : "Amaysim Web Server"
 				}],
 				"UserData" : {
 					"Fn::Base64" : {
@@ -243,7 +261,7 @@
 								"sudo setsebool -P httpd_can_network_connect_db on\n",
 								"wget https://s3-ap-southeast-2.amazonaws.com/michael.garcia/app1.tgz\n",
 								"sudo tar -xzvf app1.tgz -C /var/www/html\n",
-								"sudo sed -i 's/localhost/", {"Fn::GetAtt" : ["AmaysimDBServer", "Endpoint.Address"]}, "/' /var/www/html/index.php"
+								"sudo sed -i 's/localhost/", {"Fn::GetAtt" : ["AmaysimDBCluster", "Endpoint.Address"]}, "/' /var/www/html/index.php"
 							]
 						]
 					}
@@ -253,15 +271,19 @@
 		}
 	},
 	"Outputs" : {
-		"AmaysimDBEndpoint" : {
+		"AmaysimDBClusterEndpointName" : {
 			"Description" : "Amaysim DB Server Endpoint",
-			"Value" : {"Fn::GetAtt" : ["AmaysimDBServer", "Endpoint.Address"]}
+			"Value" : {"Fn::GetAtt" : ["AmaysimDBCluster", "Endpoint.Address"]}
 		},
-		"AmaysimJumpServer" : {
+		"AmaysimDBClusterReadEndpointName" : {
+			"Description" : "Amaysim DB Server Read Endpoint",
+			"Value" : {"Fn::GetAtt" : ["AmaysimDBCluster", "Endpoint.Address"]}
+		},
+		"AmaysimJumpServerName" : {
 			"Description" : "ssh centos@hostname",
 			"Value" : {"Fn::GetAtt" : ["AmaysimJumpServer", "PublicDnsName"]}
 		},
-		"AmaysimWebServer" : {
+		"AmaysimWebServerName" : {
 			"Description" : "Copy and paste the endpoint in your web browser",
 			"Value" : {"Fn::GetAtt" : ["AmaysimWebServer", "PublicDnsName"]}
 		}
