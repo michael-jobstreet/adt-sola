@@ -90,10 +90,54 @@
 				"ToPort" : "22"
 			}
 		},
-		"AmaysimPubSub03" : {
+		"AmaysimPubSub02" : {
 			"Type" : "AWS::EC2::Subnet",
 			"Properties" : {
 				"AvailabilityZone" : "ap-southeast-2a",
+				"CidrBlock" : "10.0.2.0/24",
+				"VpcId" : {"Ref" : "AmaysimVPC"},
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet 02"}]
+			}
+		},
+		"AmaysimPubSub02RTA02" : {
+			"Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties" : {
+				"SubnetId" : {"Ref" : "AmaysimPubSub02"},
+				"RouteTableId" : {"Ref" : "AmaysimRT01"}
+			}
+		},
+		"AmaysimSGPublicSub02" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Amaysim Security Group Public Subnet02",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub02"}],
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimPublicInboundHTTP02" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimSGPublicSub02"},
+				"CidrIp" : "0.0.0.0/0",
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "80"
+			}
+		},
+		"AmaysimPrivateInboundSSH02" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimSGPublicSub02"},
+				"CidrIp" : "10.0.1.0/24",
+				"IpProtocol" : "tcp",
+				"FromPort" : "22",
+				"ToPort" : "22"
+			}
+		},
+		"AmaysimPubSub03" : {
+			"Type" : "AWS::EC2::Subnet",
+			"Properties" : {
+				"AvailabilityZone" : "ap-southeast-2b",
 				"CidrBlock" : "10.0.3.0/24",
 				"VpcId" : {"Ref" : "AmaysimVPC"},
 				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet 03"}]
@@ -114,7 +158,7 @@
 				"VpcId" : {"Ref" : "AmaysimVPC"}
 			}
 		},
-		"AmaysimPublicInboundHTTP" : {
+		"AmaysimPublicInboundHTTP03" : {
 			"Type" : "AWS::EC2::SecurityGroupIngress",
 			"Properties" : {
 				"GroupId" : {"Ref" : "AmaysimSGPublicSub03"},
@@ -124,7 +168,7 @@
 				"ToPort" : "80"
 			}
 		},
-		"AmaysimPrivateInboundSSH" : {
+		"AmaysimPrivateInboundSSH03" : {
 			"Type" : "AWS::EC2::SecurityGroupIngress",
 			"Properties" : {
 				"GroupId" : {"Ref" : "AmaysimSGPublicSub03"},
@@ -233,23 +277,56 @@
 			},
 			"DependsOn" : "AmaysimVPCIGWAttachment"
 		},
-		"AmaysimWebServer" : {
-			"Type" : "AWS::EC2::Instance",
+
+		"AmaysimLoadBalancerSG" : {
+			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"AvailabilityZone" : "ap-southeast-2a",
+				"GroupDescription" : "Amaysim Security Group Public Subnet03",
+				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub03"}],
+				"VpcId" : {"Ref" : "AmaysimVPC"}
+			}
+		},
+		"AmaysimLoadBalancerInboundHTTP" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimLoadBalancerSG"},
+				"CidrIp" : "0.0.0.0/0",
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "80"
+			}
+		},
+		"AmaysimLoadBalancer" : {
+			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties" : {
+				"Subnets" : [{"Ref" : "AmaysimPubSub02"}, {"Ref" : "AmaysimPubSub03"}],
+				"Listeners" : [{
+					"InstancePort" : "80",
+					"InstanceProtocol" : "HTTP",
+					"LoadBalancerPort" : "80",
+					"Protocol" : "HTTP"
+				}],
+				"HealthCheck" : {
+					"Target" : "HTTP:80/index.php",
+					"Interval" : "10",
+					"Timeout" : "5",
+					"HealthyThreshold" : "3",
+					"UnhealthyThreshold" : "2"
+				},
+				"Scheme" : "internet-facing",
+				"SecurityGroups" : [{"Ref" : "AmaysimLoadBalancerSG"}], 
+				"CrossZone" : "true",
+				"Tags" : [{"Key": "Name", "Value" : "Amaysim LoadBalancer"}]
+			}
+		},		
+		"AmaysimLaunchConfiguration" : {
+			"Type" : "AWS::AutoScaling::LaunchConfiguration",
+			"Properties" : {
+				"AssociatePublicIpAddress" : "true",
 				"ImageId" : "ami-34171d57",
 				"InstanceType" : "t2.micro",
 				"KeyName" : {"Ref" : "AmaysimKeyName"},
-				"NetworkInterfaces" : [{
-					"AssociatePublicIpAddress" : "true",
-					"DeleteOnTermination" : "true",
-					"DeviceIndex" : "0",
-					"SubnetId" : {"Ref" : "AmaysimPubSub03"},
-					"GroupSet" : [{"Ref" : "AmaysimSGPublicSub03"}]
-				}],
-				"Tags" : [{
-					"Key" : "Name", "Value" : "Amaysim Web Server"
-				}],
+				"SecurityGroups" : [{"Ref" : "AmaysimSGPublicSub02"}, {"Ref" : "AmaysimSGPublicSub03"}],
 				"UserData" : {
 					"Fn::Base64" : {
 						"Fn::Join" : ["",
@@ -268,6 +345,28 @@
 				}
 			},
 			"DependsOn" : "AmaysimVPCIGWAttachment"
+		},
+		"AmaysimAutoScalingGroup02" : {
+			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+			"Properties" : {
+				"LoadBalancerNames" : [{"Ref" : "AmaysimLoadBalancer"}],
+				"LaunchConfigurationName" : {"Ref" : "AmaysimLaunchConfiguration"},
+				"MinSize" : "2",
+				"MaxSize" : "2",
+				"DesiredCapacity" : "2",
+				"VPCZoneIdentifier" : [{"Ref" : "AmaysimPubSub02"}]
+			}
+		},
+		"AmaysimAutoScalingGroup03" : {
+			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+			"Properties" : {
+				"LoadBalancerNames" : [{"Ref" : "AmaysimLoadBalancer"}],
+				"LaunchConfigurationName" : {"Ref" : "AmaysimLaunchConfiguration"},
+				"MinSize" : "2",
+				"MaxSize" : "2",
+				"DesiredCapacity" : "2",
+				"VPCZoneIdentifier" : [{"Ref" : "AmaysimPubSub03"}]
+			}
 		}
 	},
 	"Outputs" : {
@@ -283,9 +382,9 @@
 			"Description" : "ssh centos@hostname",
 			"Value" : {"Fn::GetAtt" : ["AmaysimJumpServer", "PublicDnsName"]}
 		},
-		"AmaysimWebServerName" : {
-			"Description" : "Copy and paste the endpoint in your web browser",
-			"Value" : {"Fn::GetAtt" : ["AmaysimWebServer", "PublicDnsName"]}
+		"AmaysimLoadBalancerName" : {
+			"Description" : "Click to visit the site",
+			"Value" : {"Fn::Join" : ["", ["http://", {"Fn::GetAtt": ["AmaysimLoadBalancer", "DNSName"]}]]}
 		}
 	}
 }
