@@ -8,8 +8,8 @@
 		},
 		"ADBUsername" : {
 			"Type": "String",
-			"MinLength" : "8",
-			"MaxLength" : "14"
+			"MinLength" : "4",
+			"MaxLength" : "8"
 		},
 		"ADBPassword" : {
 			"Type" : "String",
@@ -203,11 +203,12 @@
 			"Properties" : {
 				"AllocatedStorage" : "5",
 				"AvailabilityZone" : "ap-southeast-2a",
-				"DBInstanceClass" : "db.t2.small",
+				"DBInstanceClass" : "db.t2.micro",
 				"DBInstanceIdentifier" : "amaysim-dba",
-				"Engine" : "Aurora",
+				"Engine" : "MariaDB",
 				"MasterUsername" : {"Ref" : "ADBUsername"},
 				"MasterUserPassword" : {"Ref" : "ADBPassword"},
+				"StorageType" : "Standard",
 				"VPCSecurityGroups" : [
 					{"Fn::GetAtt": ["AmaysimDB01PriSub01SG01", "GroupId"]},
 					{"Fn::GetAtt": ["AmaysimDB01PriSub02SG01", "GroupId"]}
