@@ -195,7 +195,17 @@
 				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
-		"AmaysimDB01PriSubsInboundTCP" : {
+		"AmaysimDB01PriSubsInboundTCP02" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : {"Ref" : "AmaysimDB01PriSubsSG01"},
+				"CidrIp" : "10.0.2.0/24",
+				"IpProtocol" : "tcp",
+				"FromPort" : "3306",
+				"ToPort" : "3306"
+			}
+		},
+		"AmaysimDB01PriSubsInboundTCP03" : {
 			"Type" : "AWS::EC2::SecurityGroupIngress",
 			"Properties" : {
 				"GroupId" : {"Ref" : "AmaysimDB01PriSubsSG01"},
@@ -281,8 +291,8 @@
 		"AmaysimLoadBalancerSG" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"GroupDescription" : "Amaysim Security Group Public Subnet03",
-				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim SG Public Sub03"}],
+				"GroupDescription" : "Amaysim LoadBalancer Security Group",
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim LoadBalancer SG"}],
 				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
