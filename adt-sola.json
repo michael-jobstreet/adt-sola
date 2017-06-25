@@ -19,32 +19,32 @@
 		}
 	},
 	"Resources" : {
-		"AmaysimVPC" : {
+		"AmaysimVPC01" : {
 			"Type" : "AWS::EC2::VPC",
 			"Properties" : {
 				"CidrBlock" : "10.0.0.0/16",
 				"EnableDnsHostnames" : "true",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim VPC"}]
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim VPC01"}]
 			}
 		},
 		"AmaysimIGW" : {
 			"Type" : "AWS::EC2::InternetGateway",
 			"Properties" : {
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim IGW"}]
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim IGW"}]
 			}
 		},
 		"AmaysimVPCIGWAttachment" : {
 			"Type" : "AWS::EC2::VPCGatewayAttachment",
 			"Properties" : {
 				"InternetGatewayId" : {"Ref" : "AmaysimIGW"},
-				"VpcId" : {"Ref" : "AmaysimVPC"}
+				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
 		"AmaysimRT01" : {
 			"Type" : "AWS::EC2::RouteTable",
 			"Properties" : {
-				"VpcId" : {"Ref" : "AmaysimVPC"},
-				"Tags" : [{"Key" : "Name", 	"Value" : "Amaysim RouteTable01"}]
+				"VpcId" : {"Ref" : "AmaysimVPC01"},
+				"Tags" : [{"Key" : "Name", 	"Value" : "adt-sola Amaysim RouteTable01"}]
 			}
 		},
 		"AmaysimRouteToInternet" : {
@@ -61,8 +61,8 @@
 			"Properties" : {
 				"AvailabilityZone" : "ap-southeast-2a",
 				"CidrBlock" : "10.0.1.0/24",
-				"VpcId" : {"Ref" : "AmaysimVPC"},
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet01"}]
+				"VpcId" : {"Ref" : "AmaysimVPC01"},
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim Public Subnet01"}]
 			}
 		},
 		"AmaysimPubSub01RTA01" : {
@@ -76,8 +76,8 @@
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
 				"GroupDescription" : "Amaysim Security Group Public Subnet01",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub01"}],
-				"VpcId" : {"Ref" : "AmaysimVPC"}
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim SG Public Sub01"}],
+				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
 		"AmaysimPublicInboundSSH" : {
@@ -95,8 +95,8 @@
 			"Properties" : {
 				"AvailabilityZone" : "ap-southeast-2a",
 				"CidrBlock" : "10.0.2.0/24",
-				"VpcId" : {"Ref" : "AmaysimVPC"},
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet 02"}]
+				"VpcId" : {"Ref" : "AmaysimVPC01"},
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim Public Subnet 02"}]
 			}
 		},
 		"AmaysimPubSub02RTA02" : {
@@ -110,8 +110,8 @@
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
 				"GroupDescription" : "Amaysim Security Group Public Subnet02",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub02"}],
-				"VpcId" : {"Ref" : "AmaysimVPC"}
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim SG Public Sub02"}],
+				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
 		"AmaysimPublicInboundHTTP02" : {
@@ -139,8 +139,8 @@
 			"Properties" : {
 				"AvailabilityZone" : "ap-southeast-2b",
 				"CidrBlock" : "10.0.3.0/24",
-				"VpcId" : {"Ref" : "AmaysimVPC"},
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Public Subnet 03"}]
+				"VpcId" : {"Ref" : "AmaysimVPC01"},
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim Public Subnet 03"}]
 			}
 		},
 		"AmaysimPubSub03RTA03" : {
@@ -154,8 +154,8 @@
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
 				"GroupDescription" : "Amaysim Security Group Public Subnet03",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub03"}],
-				"VpcId" : {"Ref" : "AmaysimVPC"}
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim SG Public Sub03"}],
+				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
 		"AmaysimPublicInboundHTTP03" : {
@@ -183,16 +183,16 @@
 			"Properties" : {
 				"AvailabilityZone" : "ap-southeast-2a",
 				"CidrBlock" : "10.0.4.0/24",
-				"VpcId" : {"Ref" : "AmaysimVPC"},
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet01"}]
+				"VpcId" : {"Ref" : "AmaysimVPC01"},
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim DB01 Private Subnet01"}]
 			}
 		},
 		"AmaysimDB01PriSubsSG01" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
 				"GroupDescription" : "Amaysim DB01 Private Subnet01 SG01",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 PrivSub01 SG01"}],
-				"VpcId" : {"Ref" : "AmaysimVPC"}
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim DB01 PrivSub01 SG01"}],
+				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
 		"AmaysimDB01PriSubsInboundTCP" : {
@@ -210,8 +210,8 @@
 			"Properties" : {
 				"AvailabilityZone" : "ap-southeast-2b",
 				"CidrBlock" : "10.0.5.0/24",
-				"VpcId" : {"Ref" : "AmaysimVPC"},
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim DB01 Private Subnet02"}]
+				"VpcId" : {"Ref" : "AmaysimVPC01"},
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim DB01 Private Subnet02"}]
 			}
 		},
 		
@@ -223,7 +223,7 @@
 				"MasterUsername" : {"Ref" : "ADBUsername"},
 				"MasterUserPassword" : {"Ref" : "ADBPassword"},
 				"Port" : "3306",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Database Cluster"}],
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim Database Cluster"}],
 				"VpcSecurityGroupIds" : [{"Ref" : "AmaysimDB01PriSubsSG01"}]
 			}
 		},
@@ -273,7 +273,7 @@
 					"SubnetId" : {"Ref" : "AmaysimPubSub01"},
 					"GroupSet" : [{"Ref" : "AmaysimSGPublicSub01"}]
 				}],
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim Jump Server"}]
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim Jump Server"}]
 			},
 			"DependsOn" : "AmaysimVPCIGWAttachment"
 		},
@@ -282,8 +282,8 @@
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
 				"GroupDescription" : "Amaysim Security Group Public Subnet03",
-				"Tags" : [{"Key" : "Name", "Value" : "Amaysim SG Public Sub03"}],
-				"VpcId" : {"Ref" : "AmaysimVPC"}
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Amaysim SG Public Sub03"}],
+				"VpcId" : {"Ref" : "AmaysimVPC01"}
 			}
 		},
 		"AmaysimLoadBalancerInboundHTTP" : {
@@ -316,7 +316,7 @@
 				"Scheme" : "internet-facing",
 				"SecurityGroups" : [{"Ref" : "AmaysimLoadBalancerSG"}], 
 				"CrossZone" : "true",
-				"Tags" : [{"Key": "Name", "Value" : "Amaysim LoadBalancer"}]
+				"Tags" : [{"Key": "Name", "Value" : "adt-sola Amaysim LoadBalancer"}]
 			}
 		},		
 		"AmaysimLaunchConfiguration" : {
