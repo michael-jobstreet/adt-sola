@@ -346,7 +346,7 @@
 			},
 			"DependsOn" : "AmaysimVPCIGWAttachment"
 		},
-		"AmaysimAutoScalingGroup02" : {
+		"AmaysimWebServerGroupSub02" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
 				"LoadBalancerNames" : [{"Ref" : "AmaysimLoadBalancer"}],
@@ -354,10 +354,11 @@
 				"MinSize" : "2",
 				"MaxSize" : "2",
 				"DesiredCapacity" : "2",
-				"VPCZoneIdentifier" : [{"Ref" : "AmaysimPubSub02"}]
+				"VPCZoneIdentifier" : [{"Ref" : "AmaysimPubSub02"}],
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Web Server Sub2", "PropagateAtLaunch" : "true"}]
 			}
 		},
-		"AmaysimAutoScalingGroup03" : {
+		"AmaysimWebServerGroupSub03" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
 				"LoadBalancerNames" : [{"Ref" : "AmaysimLoadBalancer"}],
@@ -365,7 +366,8 @@
 				"MinSize" : "2",
 				"MaxSize" : "2",
 				"DesiredCapacity" : "2",
-				"VPCZoneIdentifier" : [{"Ref" : "AmaysimPubSub03"}]
+				"VPCZoneIdentifier" : [{"Ref" : "AmaysimPubSub03"}],
+				"Tags" : [{"Key" : "Name", "Value" : "adt-sola Web Server Sub3", "PropagateAtLaunch" : "true"}]
 			}
 		}
 	},
